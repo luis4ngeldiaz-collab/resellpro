@@ -1,62 +1,88 @@
-console.log("ResellPro loaded");
+let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+let sales = JSON.parse(localStorage.getItem("sales")) || [];
 
-let items = [];
+function save(){
+
+localStorage.setItem("inventory",JSON.stringify(inventory));
+localStorage.setItem("sales",JSON.stringify(sales));
+
+}
 
 function addItem(){
 
-const sku = document.getElementById("sku").value;
-const itemName = document.getElementById("item").value;
-const cost = document.getElementById("cost").value;
-const price = document.getElementById("price").value;
-const bin = document.getElementById("bin").value;
+let sku=document.getElementById("sku").value;
+let item=document.getElementById("item").value;
+let cost=document.getElementById("cost").value;
+let price=document.getElementById("price").value;
+let bin=document.getElementById("bin").value;
+let batch=document.getElementById("batch").value;
 
-const item = {
-sku: sku,
-name: itemName,
-cost: cost,
-price: price,
-bin: bin,
-id: Date.now()
+let photoInput=document.getElementById("photo");
+let photo="";
+
+if(photoInput.files[0]){
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+photo=e.target.result;
+
+let obj={sku,item,cost,price,bin,batch,photo};
+
+inventory.push(obj);
+
+save();
+renderInventory();
+updateDashboard();
+
 };
 
-items.push(item);
+reader.readAsDataURL(photoInput.files[0]);
 
-saveItems();
+}else{
 
-renderItems();
+let obj={sku,item,cost,price,bin,batch,photo};
 
-clearInputs();
+inventory.push(obj);
 
-}
-
-function saveItems(){
-localStorage.setItem("resellItems", JSON.stringify(items));
-}
-
-function loadItems(){
-
-const data = localStorage.getItem("resellItems");
-
-if(data){
-items = JSON.parse(data);
-}
-
-renderItems();
+save();
+renderInventory();
+updateDashboard();
 
 }
 
-function renderItems(){
+}
 
-const list = document.getElementById("inventory");
+function renderInventory(){
 
-list.innerHTML = "";
+let list=document.getElementById("inventory");
 
-items.forEach(item => {
+list.innerHTML="";
 
-const li = document.createElement("li");
+inventory.forEach((i,index)=>{
 
-li.textContent =
-`${item.sku} | ${item.name} | Cost $${item.cost} | Price $${item.price} | Bin ${item.bin}`;
+let li=document.createElement("li");
+
+li.innerHTML=
+
+`
+${i.sku} | ${i.item}<br>
+Cost $${i.cost} | Price $${i.price}<br>
+Bin ${i.bin} | Batch ${i.batch}
+<br>
+<button onclick="deleteItem(${index})">Delete</button>
+`;
+
+if(i.photo){
+
+let img=document.createElement("img");
+
+img.src=i.photo;
+
+li.appendChild(img);
+
+}
 
 list.appendChild(li);
 
@@ -64,14 +90,93 @@ list.appendChild(li);
 
 }
 
-function clearInputs(){
+function deleteItem(i){
 
-document.getElementById("sku").value = "";
-document.getElementById("item").value = "";
-document.getElementById("cost").value = "";
-document.getElementById("price").value = "";
-document.getElementById("bin").value = "";
+inventory.splice(i,1);
+
+save();
+renderInventory();
+updateDashboard();
 
 }
 
-loadItems();
+function logSale(){
+
+let sku=document.getElementById("saleSku").value;
+let soldPrice=document.getElementById("soldPrice").value;
+
+let item=inventory.find(i=>i.sku==sku);
+
+if(!item){
+
+alert("SKU not found");
+return;
+
+}
+
+let profit=soldPrice-item.cost;
+
+sales.push({sku,soldPrice,profit});
+
+save();
+
+renderSales();
+updateDashboard();
+
+}
+
+function renderSales(){
+
+let list=document.getElementById("sales");
+
+list.innerHTML="";
+
+sales.forEach(s=>{
+
+let li=document.createElement("li");
+
+li.textContent=`SKU ${s.sku} | Sold $${s.soldPrice} | Profit $${s.profit}`;
+
+list.appendChild(li);
+
+});
+
+}
+
+function updateDashboard(){
+
+let profit=sales.reduce((t,s)=>t+Number(s.profit),0);
+
+document.getElementById("profit").textContent="$"+profit;
+
+document.getElementById("sold").textContent=sales.length;
+
+document.getElementById("count").textContent=inventory.length;
+
+}
+
+function searchItems(){
+
+let q=document.getElementById("search").value.toLowerCase();
+
+let items=document.querySelectorAll("#inventory li");
+
+items.forEach(i=>{
+
+if(i.textContent.toLowerCase().includes(q)){
+
+i.style.display="block";
+
+}else{
+
+i.style.display="none";
+
+}
+
+});
+
+}
+
+renderInventory();
+renderSales();
+updateDashboard();
