@@ -1,59 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>ResellPro</title>
 
-<style>
-body{
-background:#0b0b0b;
-color:white;
-font-family:Arial;
-padding:20px;
-}
+<link rel="stylesheet" href="style.css">
 
-h1{
-color:#00ff9c;
-}
-
-input{
-padding:8px;
-margin:4px;
-border-radius:6px;
-border:none;
-}
-
-button{
-padding:10px;
-background:#00ff9c;
-border:none;
-border-radius:6px;
-font-weight:bold;
-cursor:pointer;
-}
-
-li{
-margin-top:10px;
-}
-</style>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
 </head>
 
 <body>
 
-<h1>ResellPro Inventory</h1>
+<div class="container">
+
+<h1>ResellPro</h1>
+
+<input id="search" placeholder="Search inventory..." oninput="searchItems()">
+
+<div id="dashboard" class="card">
+
+<h2>Dashboard</h2>
+
+<p>Total Profit: <span id="profit">$0</span></p>
+<p>Items Sold: <span id="sold">0</span></p>
+<p>Inventory Count: <span id="count">0</span></p>
+
+</div>
+
+<h2>Add Inventory</h2>
 
 <input id="sku" placeholder="SKU">
-<input id="item" placeholder="Item">
+<input id="item" placeholder="Item Name">
 <input id="cost" placeholder="Cost">
 <input id="price" placeholder="Sale Price">
 <input id="bin" placeholder="Bin Location">
+<input id="batch" placeholder="Batch #">
 
-<br><br>
+<input type="file" id="photo">
 
 <button onclick="addItem()">Add Item</button>
 
+<h2>Inventory</h2>
+
 <ul id="inventory"></ul>
+
+<h2>Log Sale</h2>
+
+<input id="saleSku" placeholder="SKU">
+<input id="soldPrice" placeholder="Sold Price">
+
+<button onclick="logSale()">Log Sale</button>
+
+<h2>Sales</h2>
+
+<ul id="sales"></ul>
+
+</div>
 
 <script src="app.js"></script>
 
