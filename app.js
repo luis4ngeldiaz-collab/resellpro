@@ -12,10 +12,12 @@ function addItem(){
 
 let sku=document.getElementById("sku").value;
 let item=document.getElementById("item").value;
-let cost=document.getElementById("cost").value;
-let price=document.getElementById("price").value;
+let cost=Number(document.getElementById("cost").value);
+let price=Number(document.getElementById("price").value);
 let bin=document.getElementById("bin").value;
 let batch=document.getElementById("batch").value;
+
+let profit=price-cost;
 
 let photoInput=document.getElementById("photo");
 let photo="";
@@ -28,7 +30,7 @@ reader.onload=function(e){
 
 photo=e.target.result;
 
-let obj={sku,item,cost,price,bin,batch,photo};
+let obj={sku,item,cost,price,bin,batch,photo,profit};
 
 inventory.push(obj);
 
@@ -42,7 +44,7 @@ reader.readAsDataURL(photoInput.files[0]);
 
 }else{
 
-let obj={sku,item,cost,price,bin,batch,photo};
+let obj={sku,item,cost,price,bin,batch,photo,profit};
 
 inventory.push(obj);
 
@@ -68,10 +70,11 @@ li.innerHTML=
 
 `
 ${i.sku} | ${i.item}<br>
-Cost $${i.cost} | Price $${i.price}<br>
+Cost $${i.cost} | Price $${i.price} | Profit $${i.profit}<br>
 Bin ${i.bin} | Batch ${i.batch}
 <br>
 <button onclick="deleteItem(${index})">Delete</button>
+<button onclick="editItem(${index})">Edit</button>
 `;
 
 if(i.photo){
@@ -79,6 +82,10 @@ if(i.photo){
 let img=document.createElement("img");
 
 img.src=i.photo;
+img.style.width="80px";
+img.style.borderRadius="8px";
+img.style.display="block";
+img.style.marginTop="6px";
 
 li.appendChild(img);
 
@@ -100,10 +107,29 @@ updateDashboard();
 
 }
 
+function editItem(i){
+
+let item=inventory[i];
+
+document.getElementById("sku").value=item.sku;
+document.getElementById("item").value=item.item;
+document.getElementById("cost").value=item.cost;
+document.getElementById("price").value=item.price;
+document.getElementById("bin").value=item.bin;
+document.getElementById("batch").value=item.batch;
+
+inventory.splice(i,1);
+
+save();
+renderInventory();
+updateDashboard();
+
+}
+
 function logSale(){
 
 let sku=document.getElementById("saleSku").value;
-let soldPrice=document.getElementById("soldPrice").value;
+let soldPrice=Number(document.getElementById("soldPrice").value);
 
 let item=inventory.find(i=>i.sku==sku);
 
@@ -147,11 +173,19 @@ function updateDashboard(){
 
 let profit=sales.reduce((t,s)=>t+Number(s.profit),0);
 
+let value=inventory.reduce((t,i)=>t+Number(i.price),0);
+
 document.getElementById("profit").textContent="$"+profit;
-
 document.getElementById("sold").textContent=sales.length;
-
 document.getElementById("count").textContent=inventory.length;
+
+let valueEl=document.getElementById("value");
+
+if(valueEl){
+
+valueEl.textContent="$"+value;
+
+}
 
 }
 
