@@ -1,7 +1,5 @@
-let inventory = JSON.parse(localStorage.getItem("inventory")) || [];
-let sales = JSON.parse(localStorage.getItem("sales")) || [];
-
-function save(){
+let cost=Number(document.getElementById("cost").value.replace("$",""));
+let price=Number(document.getElementById("price").value.replace("$",""));function save(){
 
 localStorage.setItem("inventory",JSON.stringify(inventory));
 localStorage.setItem("sales",JSON.stringify(sales));
